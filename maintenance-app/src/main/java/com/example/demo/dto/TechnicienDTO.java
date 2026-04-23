@@ -14,7 +14,7 @@ public class TechnicienDTO {
         @Size(max = 500)
         private String competences;
  
-        private boolean disponible;
+        private boolean disponibilite;
     }
  
     @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
@@ -22,7 +22,7 @@ public class TechnicienDTO {
         private Long id;
         private String nom;
         private String competences;
-        private boolean disponible;
+        private boolean disponibilite;
         private long interventionsEnCours;
     }
 }
