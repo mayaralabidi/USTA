@@ -37,7 +37,7 @@ public class DashboardService {
                 .interventionsPlanifiees(interventionRepo.countByStatut(StatutIntervention.PLANIFIEE))
                 .interventionsEnCours(interventionRepo.countByStatut(StatutIntervention.EN_COURS))
                 .interventionsTerminees(interventionRepo.countByStatut(StatutIntervention.TERMINEE))
-                .techniciensDispo(technicienRepo.countByDisponibleTrue())
+                .techniciensDispo(technicienRepo.countByDisponibiliteTrue())
                 .coutTotalMois(interventionRepo.sumCoutByDateBetween(debut, fin))
                 .pannesParCategorie(pannesParCategorie)
                 .interventionsParStatut(interventionsParStatut)

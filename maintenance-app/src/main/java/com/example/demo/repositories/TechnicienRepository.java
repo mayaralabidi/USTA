@@ -9,6 +9,6 @@ import com.example.demo.entities.Technicien;
 
 @Repository
 public interface TechnicienRepository extends JpaRepository<Technicien, Long> {
-    List<Technicien> findByDisponibleTrue();
-    long countByDisponibleTrue();
+    List<Technicien> findByDisponibiliteTrue();
+    long countByDisponibiliteTrue();
 }

@@ -23,7 +23,7 @@ public class TechnicienService {
     }
  
     public List<TechnicienDTO.Response> findDisponibles() {
-        return repo.findByDisponibleTrue().stream().map(this::toResponse).collect(Collectors.toList());
+        return repo.findByDisponibiliteTrue().stream().map(this::toResponse).collect(Collectors.toList());
     }
  
     public TechnicienDTO.Response findById(Long id) {
