@@ -52,7 +52,7 @@ public class EquipementService {
  
     public Equipement getOrThrow(Long id) {
         return repo.findById(id)
-                .orElseThrow(() -> new com.example.demo.exceptions.ResourceNotFoundException("Équipement introuvable : id=" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Équipement introuvable : id=" + id));
     }
  
     private EquipementDTO.Response toResponse(Equipement e) {

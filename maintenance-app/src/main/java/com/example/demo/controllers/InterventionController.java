@@ -1,7 +1,6 @@
 package com.example.demo.controllers;
 
 import com.example.demo.dto.InterventionDTO;
-import com.example.demo.entities.Intervention.StatutIntervention;
 import com.example.demo.services.InterventionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

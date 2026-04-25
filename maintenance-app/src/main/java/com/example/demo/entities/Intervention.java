@@ -2,9 +2,6 @@ package com.example.demo.entities;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
-
-import com.example.demo.entities.Equipement.EtatEquipement;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
