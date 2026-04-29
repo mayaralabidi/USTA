@@ -1,1 +1,163 @@
 /.metadata/
+# ===========================
+# SPRING BOOT (Java/Maven/Gradle)
+# ===========================
+
+# Compiled class files
+*.class
+
+# Log files
+*.log
+
+# Package files
+*.jar
+*.war
+*.ear
+*.nar
+
+# Maven
+target/
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Spring Boot specific
+spring-shell.log
+
+# Application properties with secrets (keep template, ignore local overrides)
+**/application-local.properties
+**/application-local.yml
+**/application-secrets.properties
+**/application-secrets.yml
+
+
+# ===========================
+# ANGULAR (Node.js / TypeScript)
+# ===========================
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+tmp/
+out-tsc/
+
+# Angular cache
+.angular/
+
+# Angular environment files with secrets
+**/environment.local.ts
+**/environment.prod.local.ts
+
+# Compiled CSS (from Sass/Less)
+**/*.css.map
+**/*.js.map
+
+
+# ===========================
+# IDEs & EDITORS
+# ===========================
+
+# IntelliJ IDEA / WebStorm
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Eclipse
+.classpath
+.project
+.settings/
+.factorypath
+
+# VS Code
+.vscode/
+!.vscode/extensions.json
+
+# NetBeans
+nbproject/
+nbautotemplate/
+
+# STS (Spring Tool Suite)
+.apt_generated
+.springBeans
+.sts4-cache
+
+
+# ===========================
+# OS FILES
+# ===========================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+
+# ===========================
+# TESTING & COVERAGE
+# ===========================
+
+# Jest / Karma coverage
+coverage/
+.nyc_output/
+
+# JaCoCo (Java)
+*.exec
+
+
+# ===========================
+# DOCKER & DEVOPS
+# ===========================
+
+# Docker overrides (keep Dockerfile, ignore local compose overrides)
+docker-compose.override.yml
+
+# Terraform
+*.tfstate
+*.tfstate.backup
+.terraform/
+
+
+# ===========================
+# MISC
+# ===========================
+
+# Environment files
+**/.env
+**/.env.*
+**/.env.example
+
+# Package lock (choose one — keep if you want reproducible builds)
+# package-lock.json
+# yarn.lock
+
+# Yarn integrity
+.yarn-integrity
+
+# Optional npm cache
+.npm/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*.swo

@@ -27,24 +27,34 @@ public class Panne {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
- 
+
     @Column(nullable = false, length = 500)
     private String description;
- 
+
     @Column(nullable = false)
     private String categorie;
- 
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "equipement_id", nullable = false)
     private Equipement equipement;
- 
+
     @Column(name = "date_signalement", nullable = false)
     private LocalDateTime dateSignalement;
- 
+
     @Enumerated(EnumType.STRING)
     private StatutPanne statut;
- 
+
+    // priority field, defaults to MOYENNE
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private PrioritePanne priorite = PrioritePanne.MOYENNE;
+
     public enum StatutPanne {
         SIGNALE, EN_COURS, RESOLU, FERME
+    }
+
+    public enum PrioritePanne {
+        FAIBLE, MOYENNE, CRITIQUE
     }
 }

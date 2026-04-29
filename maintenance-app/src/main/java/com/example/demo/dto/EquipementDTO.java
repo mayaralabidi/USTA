@@ -9,14 +9,18 @@ public class EquipementDTO {
  
     @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
     public static class Request {
+ 
         @NotBlank(message = "Le nom est obligatoire")
-        @Size(min = 2, max = 100, message = "Le nom doit contenir entre 2 et 100 caractères")
+        @Size(min = 2, max = 100)
         private String nom;
  
         @NotNull(message = "L'état est obligatoire")
         private EtatEquipement etat;
  
         private LocalDate dateAcquisition;
+ 
+        @Size(max = 150)
+        private String localisation;
     }
  
     @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
@@ -27,6 +31,6 @@ public class EquipementDTO {
         private LocalDate dateAcquisition;
         private long nombrePannes;
         private long nombreInterventions;
+        private String localisation;  
     }
 }
- 

@@ -7,14 +7,19 @@ public class TechnicienDTO {
  
     @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
     public static class Request {
+ 
         @NotBlank(message = "Le nom est obligatoire")
-        @Size(min = 2, max = 100, message = "Le nom doit contenir entre 2 et 100 caractères")
+        @Size(min = 2, max = 100)
         private String nom;
  
         @Size(max = 500)
         private String competences;
  
         private boolean disponibilite;
+ 
+        @Email(message = "Format email invalide")
+        @Size(max = 150)
+        private String email;
     }
  
     @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
@@ -24,6 +29,6 @@ public class TechnicienDTO {
         private String competences;
         private boolean disponibilite;
         private long interventionsEnCours;
+        private String email;  
     }
 }
- 
