@@ -36,6 +36,7 @@ public class TechnicienService {
                 .nom(dto.getNom())
                 .competences(dto.getCompetences())
                 .disponibilite(dto.isDisponibilite())
+                .email(dto.getEmail())   
                 .build();
         return toResponse(repo.save(t));
     }
@@ -46,6 +47,7 @@ public class TechnicienService {
         t.setNom(dto.getNom());
         t.setCompetences(dto.getCompetences());
         t.setDisponibilite(dto.isDisponibilite());
+        t.setEmail(dto.getEmail());
         return toResponse(repo.save(t));
     }
  
@@ -71,6 +73,7 @@ public class TechnicienService {
                 .competences(t.getCompetences())
                 .disponibilite(t.isDisponibilite())
                 .interventionsEnCours(enCours)
+                .email(t.getEmail())
                 .build();
     }
 }

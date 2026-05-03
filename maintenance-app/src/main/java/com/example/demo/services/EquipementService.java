@@ -2,8 +2,12 @@ package com.example.demo.services;
  
 import com.example.demo.dto.EquipementDTO;
 import com.example.demo.entities.Equipement;
+import com.example.demo.entities.Panne;
+import com.example.demo.exceptions.BusinessRuleException;
 import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.repositories.EquipementRepository;
+import com.example.demo.repositories.PanneRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +20,7 @@ import java.util.stream.Collectors;
 public class EquipementService {
  
     private final EquipementRepository repo;
+    private final PanneRepository panneRepo;
  
     public List<EquipementDTO.Response> findAll() {
         return repo.findAll().stream().map(this::toResponse).collect(Collectors.toList());
@@ -31,6 +36,7 @@ public class EquipementService {
                 .nom(dto.getNom())
                 .etat(dto.getEtat())
                 .dateAcquisition(dto.getDateAcquisition())
+                .localisation(dto.getLocalisation()) 
                 .build();
         return toResponse(repo.save(e));
     }
@@ -41,12 +47,25 @@ public class EquipementService {
         e.setNom(dto.getNom());
         e.setEtat(dto.getEtat());
         e.setDateAcquisition(dto.getDateAcquisition());
+        e.setLocalisation(dto.getLocalisation()); 
         return toResponse(repo.save(e));
     }
  
     @Transactional
     public void delete(Long id) {
-        getOrThrow(id);
+        Equipement e = getOrThrow(id);
+     
+        // Check for active pannes (SIGNALE or EN_COURS)
+        long activePannes = panneRepo.countByEquipementIdAndStatutIn(
+                id,
+                List.of(Panne.StatutPanne.SIGNALE, Panne.StatutPanne.EN_COURS));
+     
+        if (activePannes > 0) {
+            throw new BusinessRuleException(
+                "Impossible de supprimer l'équipement '" + e.getNom() + "' : " +
+                "il possède " + activePannes + " panne(s) active(s). Résolvez-les d'abord.");
+        }
+     
         repo.deleteById(id);
     }
  
@@ -63,6 +82,7 @@ public class EquipementService {
                 .dateAcquisition(e.getDateAcquisition())
                 .nombrePannes(e.getPannes() != null ? e.getPannes().size() : 0)
                 .nombreInterventions(e.getInterventions() != null ? e.getInterventions().size() : 0)
+                .localisation(e.getLocalisation())
                 .build();
     }
 }
