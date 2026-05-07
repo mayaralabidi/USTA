@@ -87,14 +87,21 @@ public class InterventionService {
     public InterventionDTO.Response update(Long id, InterventionDTO.Request dto) {
         Intervention i = getWithDetails(id);
 
+        // Block editing terminal interventions entirely
+        if (i.getStatut() == StatutIntervention.TERMINEE ||
+            i.getStatut() == StatutIntervention.ANNULEE) {
+            throw new BusinessRuleException(
+                "Impossible de modifier une intervention '" + i.getStatut() +
+                "'. Elle est dans un état terminal.");
+        }
+
         Technicien technicien = dto.getTechnicienId() != null
                 ? technicienService.getOrThrow(dto.getTechnicienId())
                 : null;
 
-        // Rule 1: technicien must be disponible
         if (technicien != null && !technicien.isDisponibilite()) {
             throw new BusinessRuleException(
-                    "Le technicien '" + technicien.getNom() + "' n'est pas disponible.");
+                "Le technicien '" + technicien.getNom() + "' n'est pas disponible.");
         }
 
         i.setEquipement(equipementService.getOrThrow(dto.getEquipementId()));

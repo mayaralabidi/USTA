@@ -20,7 +20,6 @@ import { ApiService } from '../../core/api.service';
 import { Equipement, EtatEquipement } from '../../models';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 
-// ── Dialog ────────────────────────────────────
 @Component({
   selector: 'app-equipement-dialog',
   standalone: true,
@@ -59,6 +58,17 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
         </mat-select>
       </mat-form-field>
       <mat-form-field appearance="outline">
+        <mat-label>Localisation</mat-label>
+        <input
+          matInput
+          [formControl]="$any(form.controls['localisation'])"
+          placeholder="Ex: Atelier A, Ligne 3, Salle des serveurs"
+        />
+        <mat-icon matPrefix style="color:var(--text-faint);margin-right:6px;font-size:18px"
+          >location_on</mat-icon
+        >
+      </mat-form-field>
+      <mat-form-field appearance="outline">
         <mat-label>Date d'acquisition</mat-label>
         <input matInput type="date" [formControl]="$any(form.controls['dateAcquisition'])" />
       </mat-form-field>
@@ -81,6 +91,7 @@ export class EquipementDialogComponent {
     this.form = fb.group({
       nom: [data?.nom || '', [Validators.required, Validators.minLength(2)]],
       etat: [data?.etat || 'OPERATIONNEL', Validators.required],
+      localisation: [data?.localisation || ''],
       dateAcquisition: [data?.dateAcquisition || ''],
     });
   }
@@ -89,7 +100,6 @@ export class EquipementDialogComponent {
   }
 }
 
-// ── Main ──────────────────────────────────────
 @Component({
   selector: 'app-equipements',
   standalone: true,
@@ -115,12 +125,10 @@ export class EquipementDialogComponent {
         </p>
       </div>
       <button mat-flat-button class="btn-primary" (click)="openDialog()">
-        <mat-icon style="font-size:16px;width:16px;height:16px;margin-right:5px">add</mat-icon>
-        Ajouter
+        <mat-icon style="font-size:16px;width:16px;height:16px;margin-right:5px">add</mat-icon
+        >Ajouter
       </button>
     </div>
-
-    <!-- Stats pills -->
     <div class="stats-row">
       <div class="stat-pill" style="background:rgba(16,185,129,.12);color:#34d399">
         <strong>{{ count('OPERATIONNEL') }}</strong> Opérationnels
@@ -135,23 +143,19 @@ export class EquipementDialogComponent {
         <strong>{{ count('HORS_SERVICE') }}</strong> Hors service
       </div>
     </div>
-
-    <!-- Search bar -->
     <mat-form-field appearance="outline" style="width:100%;max-width:340px;margin-bottom:16px">
-      <mat-label>Rechercher un équipement</mat-label>
+      <mat-label>Rechercher</mat-label>
       <input
         matInput
         [value]="search()"
         (input)="onSearch($event)"
-        placeholder="Nom de l'équipement..."
+        placeholder="Nom ou localisation..."
       />
       <button *ngIf="search()" mat-icon-button matSuffix (click)="search.set('')">
         <mat-icon style="font-size:16px">close</mat-icon>
       </button>
     </mat-form-field>
-
     <div *ngIf="loading()" class="loading-state"><mat-spinner diameter="36"></mat-spinner></div>
-
     <div *ngIf="!loading()" class="card">
       <table mat-table [dataSource]="filtered()">
         <ng-container matColumnDef="id">
@@ -167,7 +171,16 @@ export class EquipementDialogComponent {
         <ng-container matColumnDef="nom">
           <th mat-header-cell *matHeaderCellDef>Nom</th>
           <td mat-cell *matCellDef="let e">
-            <span style="font-weight:500;color:var(--text-primary)">{{ e.nom }}</span>
+            <div>
+              <span style="font-weight:500;color:var(--text-primary)">{{ e.nom }}</span>
+              <div
+                *ngIf="e.localisation"
+                style="font-size:11px;color:var(--text-faint);display:flex;align-items:center;gap:3px;margin-top:2px"
+              >
+                <mat-icon style="font-size:11px;width:11px;height:11px">location_on</mat-icon
+                >{{ e.localisation }}
+              </div>
+            </div>
           </td>
         </ng-container>
         <ng-container matColumnDef="etat">
@@ -180,7 +193,9 @@ export class EquipementDialogComponent {
         </ng-container>
         <ng-container matColumnDef="dateAcquisition">
           <th mat-header-cell *matHeaderCellDef>Acquisition</th>
-          <td mat-cell *matCellDef="let e">{{ e.dateAcquisition || '—' }}</td>
+          <td mat-cell *matCellDef="let e" style="font-size:12px;color:var(--text-faint)">
+            {{ e.dateAcquisition || '—' }}
+          </td>
         </ng-container>
         <ng-container matColumnDef="pannes">
           <th mat-header-cell *matHeaderCellDef>Pannes</th>
@@ -264,23 +279,20 @@ export class EquipementsComponent implements OnInit {
   private api = inject(ApiService);
   private dialog = inject(MatDialog);
   private snack = inject(MatSnackBar);
-
   equipements = signal<Equipement[]>([]);
   loading = signal(true);
-  cols = ['id', 'nom', 'etat', 'dateAcquisition', 'pannes', 'actions'];
-
   search = signal('');
-
+  cols = ['id', 'nom', 'etat', 'dateAcquisition', 'pannes', 'actions'];
   filtered = computed(() => {
     const q = this.search().toLowerCase().trim();
     if (!q) return this.equipements();
-    return this.equipements().filter((e) => e.nom.toLowerCase().includes(q));
+    return this.equipements().filter(
+      (e) => e.nom.toLowerCase().includes(q) || (e.localisation || '').toLowerCase().includes(q),
+    );
   });
-
   ngOnInit() {
     this.load();
   }
-
   load() {
     this.loading.set(true);
     this.api.getEquipements().subscribe({
@@ -291,55 +303,54 @@ export class EquipementsComponent implements OnInit {
       error: () => this.loading.set(false),
     });
   }
-
   onSearch(event: Event) {
     this.search.set((event.target as HTMLInputElement).value);
   }
-
   openDialog(eq?: Equipement) {
-    const ref = this.dialog.open(EquipementDialogComponent, { width: '460px', data: eq ?? null });
-    ref.afterClosed().subscribe((result) => {
-      if (!result) return;
-      const obs = eq?.id
-        ? this.api.updateEquipement(eq.id, result)
-        : this.api.createEquipement(result);
-      obs.subscribe({
-        next: () => {
-          this.snack.open(eq ? '✓ Équipement modifié' : '✓ Équipement ajouté', '', {
-            panelClass: ['snack-success'],
-          });
-          this.load();
-        },
+    this.dialog
+      .open(EquipementDialogComponent, { width: '460px', data: eq ?? null })
+      .afterClosed()
+      .subscribe((result) => {
+        if (!result) return;
+        const obs = eq?.id
+          ? this.api.updateEquipement(eq.id, result)
+          : this.api.createEquipement(result);
+        obs.subscribe({
+          next: () => {
+            this.snack.open(eq ? '✓ Équipement modifié' : '✓ Équipement ajouté', '', {
+              panelClass: ['snack-success'],
+            });
+            this.load();
+          },
+        });
       });
-    });
   }
-
   delete(eq: Equipement) {
-    const ref = this.dialog.open(ConfirmDialogComponent, {
-      width: '420px',
-      data: {
-        title: "Supprimer l'équipement",
-        message: `Voulez-vous vraiment supprimer "${eq.nom}" ? Cette action est irréversible.`,
-        confirmLabel: 'Supprimer',
-        danger: true,
-      },
-    });
-    ref.afterClosed().subscribe((confirmed) => {
-      if (!confirmed) return;
-      this.api.deleteEquipement(eq.id!).subscribe({
-        next: () => {
-          this.snack.open('✓ Équipement supprimé', '', { panelClass: ['snack-success'] });
-          this.load();
+    this.dialog
+      .open(ConfirmDialogComponent, {
+        width: '420px',
+        data: {
+          title: "Supprimer l'équipement",
+          message: `Supprimer "${eq.nom}" ?`,
+          confirmLabel: 'Supprimer',
+          danger: true,
         },
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (!confirmed) return;
+        this.api.deleteEquipement(eq.id!).subscribe({
+          next: () => {
+            this.snack.open('✓ Équipement supprimé', '', { panelClass: ['snack-success'] });
+            this.load();
+          },
+        });
       });
-    });
   }
-
-  count(etat: EtatEquipement): number {
+  count(etat: EtatEquipement) {
     return this.equipements().filter((e) => e.etat === etat).length;
   }
-
-  etatLabel(e: string): string {
+  etatLabel(e: string) {
     const m: Record<string, string> = {
       OPERATIONNEL: 'Opérationnel',
       EN_PANNE: 'En panne',

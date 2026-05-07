@@ -369,7 +369,12 @@ export class InterventionDialogComponent {
                 </button>
               </mat-menu>
 
-              <button mat-icon-button matTooltip="Modifier" (click)="openDialog(i)">
+              <button
+                mat-icon-button
+                matTooltip="Modifier"
+                (click)="openDialog(i)"
+                [disabled]="i.statut === 'TERMINEE' || i.statut === 'ANNULEE'"
+              >
                 <mat-icon style="font-size:16px;color:#6366f1">edit</mat-icon>
               </button>
 
