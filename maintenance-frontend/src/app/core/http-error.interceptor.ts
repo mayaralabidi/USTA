@@ -1,12 +1,28 @@
-import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
+import {
+  HttpInterceptorFn,
+  HttpErrorResponse,
+  HttpRequest,
+  HttpHandlerFn,
+} from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
+import { Router } from '@angular/router';
 import { NotificationService } from './notification.service';
+import { AuthService } from './auth.service';
 
-export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
+export const httpErrorInterceptor: HttpInterceptorFn = (
+  req: HttpRequest<unknown>,
+  next: HttpHandlerFn,
+) => {
   const notify = inject(NotificationService);
+  const router = inject(Router);
+  const auth = inject(AuthService);
 
-  return next(req).pipe(
+  // Attach JWT token
+  const token = auth.token();
+  const authReq = token ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : req;
+
+  return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
       let msg = 'Une erreur est survenue.';
 
@@ -17,17 +33,22 @@ export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
           break;
         case 400:
           const errors = error.error?.errors as Record<string, string> | undefined;
-          if (errors && Object.keys(errors).length > 0) {
-            msg = Object.values(errors).join(' • ');
-          } else {
-            msg = error.error?.message || 'Données invalides.';
-          }
+          msg =
+            errors && Object.keys(errors).length > 0
+              ? Object.values(errors).join(' • ')
+              : error.error?.message || 'Données invalides.';
+          break;
+        case 401:
+          auth.logout();
+          router.navigate(['/login']);
+          return throwError(() => error);
+        case 403:
+          msg = 'Accès refusé. Droits insuffisants.';
           break;
         case 404:
           msg = error.error?.message || 'Ressource introuvable.';
           break;
         case 422:
-          // BusinessRuleException — shows exact French message from backend
           msg = error.error?.message || 'Règle métier violée.';
           break;
         case 500:

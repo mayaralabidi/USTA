@@ -6,6 +6,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { forkJoin } from 'rxjs';
 import { ApiService } from '../../core/api.service';
+import { AuthService } from '../../core/auth.service';
 import { DashboardStats, Panne, STATUT_PANNE_LABELS, StatutPanne } from '../../models';
 
 @Component({
@@ -28,6 +29,31 @@ import { DashboardStats, Panne, STATUT_PANNE_LABELS, StatutPanne } from '../../m
         </button>
       </a>
     </div>
+
+    @if (auth.isAdmin()) {
+      <div class="card admin-panel" style="margin-bottom:16px">
+        <div class="card-header">
+          <span class="card-title">Espace administration</span>
+          <span class="admin-badge">ADMIN</span>
+        </div>
+        <div class="admin-grid">
+          <a routerLink="/techniciens" class="admin-action">
+            <mat-icon>engineering</mat-icon>
+            <div>
+              <div class="admin-action-title">Gérer les techniciens</div>
+              <div class="admin-action-sub">Créer, modifier et supprimer les comptes métier.</div>
+            </div>
+          </a>
+          <a routerLink="/statistiques" class="admin-action">
+            <mat-icon>bar_chart</mat-icon>
+            <div>
+              <div class="admin-action-title">Consulter les statistiques</div>
+              <div class="admin-action-sub">Suivre les coûts et la performance globale.</div>
+            </div>
+          </a>
+        </div>
+      </div>
+    }
 
     <div *ngIf="loading()" class="loading-state">
       <mat-spinner diameter="36"></mat-spinner>
@@ -196,6 +222,60 @@ import { DashboardStats, Panne, STATUT_PANNE_LABELS, StatutPanne } from '../../m
       .kpi-card.clickable:hover .kpi-sub {
         color: var(--accent-light);
       }
+      .admin-panel {
+        border: 1px solid rgba(99, 102, 241, 0.25);
+      }
+      .admin-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        padding: 14px 18px 18px;
+      }
+      .admin-action {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 14px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.02);
+        text-decoration: none;
+        color: inherit;
+        transition:
+          transform 0.15s,
+          border-color 0.15s,
+          background 0.15s;
+      }
+      .admin-action:hover {
+        transform: translateY(-2px);
+        border-color: rgba(99, 102, 241, 0.45);
+        background: rgba(99, 102, 241, 0.06);
+      }
+      .admin-action mat-icon {
+        color: var(--accent-light);
+        margin-top: 2px;
+      }
+      .admin-action-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+      .admin-action-sub {
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-top: 3px;
+        line-height: 1.4;
+      }
+      .admin-badge {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        color: #c7d2fe;
+        background: rgba(99, 102, 241, 0.15);
+        border: 1px solid rgba(99, 102, 241, 0.35);
+        padding: 4px 8px;
+        border-radius: 999px;
+      }
       .charts-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -350,6 +430,7 @@ import { DashboardStats, Panne, STATUT_PANNE_LABELS, StatutPanne } from '../../m
 export class DashboardComponent implements OnInit {
   private api = inject(ApiService);
   private router = inject(Router);
+  auth = inject(AuthService);
 
   loading = signal(true);
   stats = signal<DashboardStats | null>(null);

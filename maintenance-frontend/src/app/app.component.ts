@@ -4,11 +4,13 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { AuthService } from './core/auth.service';
 
 interface NavItem {
   path: string;
   label: string;
   icon: string;
+  adminOnly?: boolean;
 }
 
 @Component({
@@ -25,64 +27,83 @@ interface NavItem {
   ],
   template: `
     <div class="shell" [class.collapsed]="collapsed()">
-      <!-- Sidebar -->
-      <aside class="sidebar">
-        <!-- Brand -->
-        <div class="brand">
-          <div class="brand-icon">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path
-                d="M8 1.5L1.5 5v6L8 14.5 14.5 11V5L8 1.5z"
-                stroke="white"
-                stroke-width="1.2"
-                stroke-linejoin="round"
-              />
-              <path
-                d="M8 1.5v13M1.5 5l6.5 3.5 6.5-3.5"
-                stroke="white"
-                stroke-width="1"
-                stroke-linejoin="round"
-                opacity=".55"
-              />
-            </svg>
+      @if (auth.isLoggedIn()) {
+        <!-- Sidebar -->
+        <aside class="sidebar">
+          <!-- Brand -->
+          <div class="brand">
+            <div class="brand-icon">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path
+                  d="M8 1.5L1.5 5v6L8 14.5 14.5 11V5L8 1.5z"
+                  stroke="white"
+                  stroke-width="1.2"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M8 1.5v13M1.5 5l6.5 3.5 6.5-3.5"
+                  stroke="white"
+                  stroke-width="1"
+                  stroke-linejoin="round"
+                  opacity=".55"
+                />
+              </svg>
+            </div>
+            <div class="brand-text">
+              <span class="brand-name">MaintenancePro</span>
+              <span class="brand-sub">Gestion industrielle</span>
+            </div>
+            <button class="toggle-btn" (click)="collapsed.set(true)">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
           </div>
-          <div class="brand-text">
-            <span class="brand-name">MaintenancePro</span>
-            <span class="brand-sub">Gestion industrielle</span>
+
+          <!-- Collapsed toggle -->
+          <div class="expand-btn" (click)="collapsed.set(false)">
+            <mat-icon>chevron_right</mat-icon>
           </div>
-          <button class="toggle-btn" (click)="collapsed.set(true)">
-            <mat-icon>chevron_left</mat-icon>
-          </button>
-        </div>
 
-        <!-- Collapsed toggle -->
-        <div class="expand-btn" (click)="collapsed.set(false)">
-          <mat-icon>chevron_right</mat-icon>
-        </div>
+          <!-- Nav -->
+          <nav class="nav">
+            <span class="nav-section-label">Navigation</span>
 
-        <!-- Nav -->
-        <nav class="nav">
-          <span class="nav-section-label">Navigation</span>
-          <a
-            *ngFor="let item of navItems"
-            [routerLink]="item.path"
-            routerLinkActive="active"
-            class="nav-item"
-            matRipple
-            [matTooltip]="collapsed() ? item.label : ''"
-            matTooltipPosition="right"
-          >
-            <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
-            <span class="nav-label">{{ item.label }}</span>
-          </a>
-        </nav>
+            @for (item of navItems; track item.path) {
+              @if (!item.adminOnly || auth.isAdmin()) {
+                <a
+                  class="nav-item"
+                  [routerLink]="item.path"
+                  routerLinkActive="active"
+                  matRipple
+                  [matTooltip]="collapsed() ? item.label : ''"
+                  matTooltipPosition="right"
+                >
+                  <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+                  <span class="nav-label">{{ item.label }}</span>
+                </a>
+              }
+            }
+          </nav>
 
-        <!-- Footer -->
-        <div class="sidebar-footer">
-          <div class="api-dot"></div>
-          <span class="api-label">API · localhost:8080</span>
-        </div>
-      </aside>
+          <!-- Footer -->
+          <div class="sidebar-footer">
+            <div class="user-info">
+              <mat-icon class="user-icon">account_circle</mat-icon>
+              <div class="user-details">
+                <span class="user-name">{{ auth.user()?.username }}</span>
+                <span class="user-role">{{ auth.user()?.role }}</span>
+              </div>
+            </div>
+            <button
+              class="logout-btn"
+              (click)="auth.logout()"
+              matTooltip="Déconnexion"
+              matTooltipPosition="right"
+            >
+              <mat-icon>logout</mat-icon>
+            </button>
+          </div>
+        </aside>
+      }
 
       <!-- Main -->
       <main class="main">
@@ -283,37 +304,65 @@ interface NavItem {
       .sidebar-footer {
         display: flex;
         align-items: center;
+        justify-content: space-between;
         gap: 7px;
-        padding: 12px 16px;
+        padding: 12px 12px;
         border-top: 1px solid var(--border);
         overflow: hidden;
-        transition: opacity 0.2s;
       }
       .shell.collapsed .sidebar-footer {
         opacity: 0;
+        pointer-events: none;
       }
-      .api-dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: var(--green);
-        box-shadow: 0 0 6px var(--green);
-        animation: blink 2s infinite;
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+      }
+      .user-icon {
+        color: var(--text-faint);
+        font-size: 22px !important;
+        width: 22px !important;
+        height: 22px !important;
         flex-shrink: 0;
       }
-      @keyframes blink {
-        0%,
-        100% {
-          opacity: 1;
-        }
-        50% {
-          opacity: 0.4;
-        }
+      .user-details {
+        min-width: 0;
       }
-      .api-label {
+      .user-name {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .user-role {
         font-size: 10px;
         color: var(--text-faint);
-        white-space: nowrap;
+        display: block;
+      }
+      .logout-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--text-faint);
+        padding: 4px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        transition: color 0.15s;
+        flex-shrink: 0;
+      }
+      .logout-btn:hover {
+        color: #f87171;
+      }
+      .logout-btn mat-icon {
+        font-size: 18px !important;
+        width: 18px !important;
+        height: 18px !important;
       }
 
       /* ── Main ────────────────────────────── */
@@ -322,6 +371,10 @@ interface NavItem {
         min-width: 0;
         padding: 28px 32px;
         overflow-y: auto;
+      }
+
+      :host-context(.login-active) .main {
+        padding: 0;
       }
 
       @media (max-width: 768px) {
@@ -371,8 +424,10 @@ export class AppComponent {
     { path: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
     { path: 'equipements', label: 'Équipements', icon: 'precision_manufacturing' },
     { path: 'pannes', label: 'Pannes', icon: 'warning_amber' },
-    { path: 'techniciens', label: 'Techniciens', icon: 'engineering' },
+    { path: 'techniciens', label: 'Techniciens', icon: 'engineering', adminOnly: true },
     { path: 'interventions', label: 'Interventions', icon: 'build_circle' },
-    { path: 'statistiques', label: 'Statistiques', icon: 'bar_chart' },
+    { path: 'statistiques', label: 'Statistiques', icon: 'bar_chart', adminOnly: true },
   ];
+
+  constructor(public auth: AuthService) {}
 }

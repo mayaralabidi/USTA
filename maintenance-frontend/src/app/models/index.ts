@@ -14,6 +14,13 @@ export type PrioritePanne = 'FAIBLE' | 'MOYENNE' | 'CRITIQUE';
 
 export type StatutIntervention = 'PLANIFIEE' | 'EN_COURS' | 'TERMINEE' | 'ANNULEE';
 
+export const STATUT_INTERVENTION_LABELS: Record<StatutIntervention, string> = {
+  PLANIFIEE: 'Planifiée',
+  EN_COURS: 'En cours',
+  TERMINEE: 'Terminée',
+  ANNULEE: 'Annulée',
+};
+
 // ── Entities ─────────────────────────────────────
 export interface Equipement {
   id?: number;

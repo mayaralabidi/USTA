@@ -7,6 +7,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
@@ -14,6 +16,22 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+	
+	// 401
+	@ExceptionHandler(AuthenticationException.class)
+	public ResponseEntity<Map<String, Object>> handleUnauthorized(
+	        AuthenticationException ex, HttpServletRequest request) {
+	    return build(HttpStatus.UNAUTHORIZED, "Non authentifié",
+	            "Vous devez être connecté pour accéder à cette ressource.", request);
+	}
+
+	// 403
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<Map<String, Object>> handleForbidden(
+	        AccessDeniedException ex, HttpServletRequest request) {
+	    return build(HttpStatus.FORBIDDEN, "Accès refusé",
+	            "Vous n'avez pas les droits nécessaires pour cette action.", request);
+	}
 
     // 404 — resource not found
     @ExceptionHandler(ResourceNotFoundException.class)
