@@ -9,6 +9,10 @@ export interface AuthUser {
   token: string;
 }
 
+export interface SetupStatus {
+  bootstrapRequired: boolean;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly API = 'http://localhost:8080/api/auth';
@@ -41,14 +45,28 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
-    register(username: string, password: string, role: 'ADMIN' | 'TECHNICIEN') {
-      return this.http.post<AuthUser>(`${this.API}/register`, { username, password, role }).pipe(
-        tap((user) => {
-          sessionStorage.setItem(this.STORAGE_KEY, JSON.stringify(user));
-          this._user.set(user);
-        }),
-      );
-    }
+  register(username: string, password: string, role: 'ADMIN' | 'TECHNICIEN') {
+    return this.http.post<AuthUser>(`${this.API}/register`, { username, password, role }).pipe(
+      tap((user) => {
+        sessionStorage.setItem(this.STORAGE_KEY, JSON.stringify(user));
+        this._user.set(user);
+      }),
+    );
+  }
+
+  bootstrapAdmin(username: string, password: string) {
+    return this.http.post<AuthUser>(`${this.API}/bootstrap-admin`, { username, password }).pipe(
+      tap((user) => {
+        sessionStorage.setItem(this.STORAGE_KEY, JSON.stringify(user));
+        this._user.set(user);
+      }),
+    );
+  }
+
+  getSetupStatus() {
+    return this.http.get<SetupStatus>(`${this.API}/setup-status`);
+  }
+
   private loadFromStorage(): AuthUser | null {
     try {
       const raw = sessionStorage.getItem(this.STORAGE_KEY);

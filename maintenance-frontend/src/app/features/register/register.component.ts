@@ -115,8 +115,10 @@ import { HttpClient } from '@angular/common/http';
             @if (loading()) {
               <mat-spinner diameter="18" />
             } @else {
-              <mat-icon>person_add</mat-icon>
-              Créer le compte
+              <ng-container>
+                <mat-icon>person_add</mat-icon>
+                Créer le compte
+              </ng-container>
             }
           </button>
 

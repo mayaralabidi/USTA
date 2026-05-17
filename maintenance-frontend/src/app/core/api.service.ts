@@ -82,4 +82,9 @@ export class ApiService {
   getDashboardStats(): Observable<DashboardStats> {
     return this.http.get<DashboardStats>(`${this.base}/dashboard/stats`);
   }
+
+  // ── Admin ────────────────────────────────────
+  createUser(data: { username: string; password: string; role: 'ADMIN' | 'TECHNICIEN' }) {
+    return this.http.post<void>(`${this.base}/admin/users`, data);
+  }
 }

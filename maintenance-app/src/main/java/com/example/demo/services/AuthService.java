@@ -27,24 +27,53 @@ public class AuthService {
             new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword())
         );
         Utilisateur user = utilisateurRepo.findByUsername(dto.getUsername()).orElseThrow();
-        String token = jwtService.generateToken(user, Map.of("role", user.getRole().name()));
-        return AuthDTO.AuthResponse.builder()
-                .token(token)
-                .username(user.getUsername())
-                .role(user.getRole().name())
-                .build();
+        return buildResponse(user);
     }
 
     public AuthDTO.AuthResponse register(AuthDTO.RegisterRequest dto) {
+        Utilisateur user = createUser(dto, false);
+        return buildResponse(user);
+    }
+
+    public AuthDTO.AuthResponse createUser(AuthDTO.RegisterRequest dto) {
+        Utilisateur user = createUser(dto, true);
+        return buildResponse(user);
+    }
+
+    public AuthDTO.AuthResponse bootstrapAdmin(AuthDTO.RegisterRequest dto) {
+        if (utilisateurRepo.count() > 0) {
+            throw new BusinessRuleException("L'administration initiale est déjà configurée.");
+        }
+        Utilisateur user = createUserWithRole(dto, Utilisateur.Role.ADMIN);
+        return buildResponse(user);
+    }
+
+    public AuthDTO.SetupStatusResponse setupStatus() {
+        return AuthDTO.SetupStatusResponse.builder()
+                .bootstrapRequired(utilisateurRepo.count() == 0)
+                .build();
+    }
+
+    private Utilisateur createUser(AuthDTO.RegisterRequest dto, boolean allowRoleChoice) {
         if (utilisateurRepo.existsByUsername(dto.getUsername())) {
             throw new BusinessRuleException("Ce nom d'utilisateur est déjà pris.");
         }
+        return createUserWithRole(
+                dto,
+                allowRoleChoice && dto.getRole() != null ? dto.getRole() : Utilisateur.Role.TECHNICIEN
+        );
+    }
+
+    private Utilisateur createUserWithRole(AuthDTO.RegisterRequest dto, Utilisateur.Role role) {
         Utilisateur user = Utilisateur.builder()
                 .username(dto.getUsername())
                 .password(passwordEncoder.encode(dto.getPassword()))
-                .role(dto.getRole() != null ? dto.getRole() : Utilisateur.Role.TECHNICIEN)
+                .role(role)
                 .build();
-        utilisateurRepo.save(user);
+        return utilisateurRepo.save(user);
+    }
+
+    private AuthDTO.AuthResponse buildResponse(Utilisateur user) {
         String token = jwtService.generateToken(user, Map.of("role", user.getRole().name()));
         return AuthDTO.AuthResponse.builder()
                 .token(token)

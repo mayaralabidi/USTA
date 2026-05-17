@@ -427,6 +427,12 @@ export class AppComponent {
     { path: 'techniciens', label: 'Techniciens', icon: 'engineering', adminOnly: true },
     { path: 'interventions', label: 'Interventions', icon: 'build_circle' },
     { path: 'statistiques', label: 'Statistiques', icon: 'bar_chart', adminOnly: true },
+    {
+      path: 'administration',
+      label: 'Administration',
+      icon: 'admin_panel_settings',
+      adminOnly: true,
+    },
   ];
 
   constructor(public auth: AuthService) {}

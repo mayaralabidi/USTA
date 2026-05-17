@@ -26,4 +26,10 @@ public class AuthDTO {
         private String username;
         private String role;
     }
+
+    @Builder
+    @Data
+    public static class SetupStatusResponse {
+        private boolean bootstrapRequired;
+    }
 }

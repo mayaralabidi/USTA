@@ -51,6 +51,13 @@ import { DashboardStats, Panne, STATUT_PANNE_LABELS, StatutPanne } from '../../m
               <div class="admin-action-sub">Suivre les coûts et la performance globale.</div>
             </div>
           </a>
+          <a routerLink="/administration" class="admin-action">
+            <mat-icon>admin_panel_settings</mat-icon>
+            <div>
+              <div class="admin-action-title">Créer des comptes</div>
+              <div class="admin-action-sub">Ajouter des techniciens ou des administrateurs.</div>
+            </div>
+          </a>
         </div>
       </div>
     }

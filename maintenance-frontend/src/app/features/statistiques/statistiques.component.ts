@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
-import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { ApiService } from '../../core/api.service';
 import { Equipement, Intervention, Technicien, Panne } from '../../models';
@@ -11,7 +10,7 @@ import { Equipement, Intervention, Technicien, Panne } from '../../models';
 @Component({
   selector: 'app-statistiques',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatProgressSpinnerModule, MatButtonModule, RouterLink],
+  imports: [CommonModule, MatIconModule, MatProgressSpinnerModule, MatButtonModule],
   template: `
     <div
       class="page-header"

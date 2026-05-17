@@ -22,4 +22,14 @@ public class AuthController {
     public ResponseEntity<AuthDTO.AuthResponse> register(@RequestBody AuthDTO.RegisterRequest dto) {
         return ResponseEntity.ok(authService.register(dto));
     }
+
+    @PostMapping("/bootstrap-admin")
+    public ResponseEntity<AuthDTO.AuthResponse> bootstrapAdmin(@RequestBody AuthDTO.RegisterRequest dto) {
+        return ResponseEntity.ok(authService.bootstrapAdmin(dto));
+    }
+
+    @GetMapping("/setup-status")
+    public ResponseEntity<AuthDTO.SetupStatusResponse> setupStatus() {
+        return ResponseEntity.ok(authService.setupStatus());
+    }
 }

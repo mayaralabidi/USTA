@@ -13,6 +13,11 @@ export const routes: Routes = [
     loadComponent: () => Promise.resolve(RegisterComponent),
   },
   {
+    path: 'setup-admin',
+    loadComponent: () =>
+      import('./features/setup-admin/setup-admin.component').then((m) => m.SetupAdminComponent),
+  },
+  {
     path: 'dashboard',
     canActivate: [authGuard],
     loadComponent: () =>
@@ -49,6 +54,12 @@ export const routes: Routes = [
     canActivate: [adminGuard],
     loadComponent: () =>
       import('./features/statistiques/statistiques.component').then((m) => m.StatistiquesComponent),
+  },
+  {
+    path: 'administration',
+    canActivate: [adminGuard],
+    loadComponent: () =>
+      import('./features/admin-users/admin-users.component').then((m) => m.AdminUsersComponent),
   },
   { path: '**', redirectTo: 'dashboard' },
 ];

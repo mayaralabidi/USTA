@@ -1,31 +1,30 @@
-import { Component, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
+import { Component, OnInit, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../core/auth.service';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-setup-admin',
   standalone: true,
   imports: [
     CommonModule,
     FormsModule,
     RouterLink,
-    MatFormFieldModule,
-    MatInputModule,
     MatButtonModule,
+    MatFormFieldModule,
     MatIconModule,
+    MatInputModule,
     MatProgressSpinnerModule,
   ],
   template: `
     <div class="login-shell">
       <div class="login-card">
-        <!-- Brand -->
         <div class="brand">
           <div class="brand-icon">
             <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
@@ -46,44 +45,35 @@ import { AuthService } from '../../core/auth.service';
           </div>
           <div>
             <div class="brand-name">MaintenancePro</div>
-            <div class="brand-sub">Gestion industrielle</div>
+            <div class="brand-sub">Première installation</div>
           </div>
         </div>
 
-        <h2 class="title">Connexion</h2>
-        <p class="subtitle">Entrez vos identifiants pour continuer</p>
+        <h2 class="title">Créer l'administrateur initial</h2>
+        <p class="subtitle">Disponible une seule fois tant qu'aucun compte n'existe.</p>
 
-        <!-- Form -->
         <div class="form">
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Nom d'utilisateur</mat-label>
             <mat-icon matPrefix>person</mat-icon>
-            <input
-              matInput
-              [(ngModel)]="username"
-              (keydown.enter)="submit()"
-              autocomplete="username"
-            />
+            <input matInput [(ngModel)]="username" autocomplete="username" />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Mot de passe</mat-label>
             <mat-icon matPrefix>lock</mat-icon>
+            <input matInput [(ngModel)]="password" type="password" autocomplete="new-password" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Confirmer le mot de passe</mat-label>
+            <mat-icon matPrefix>lock_outline</mat-icon>
             <input
               matInput
-              [type]="showPassword() ? 'text' : 'password'"
-              [(ngModel)]="password"
-              (keydown.enter)="submit()"
-              autocomplete="current-password"
+              [(ngModel)]="confirmPassword"
+              type="password"
+              autocomplete="new-password"
             />
-            <button
-              mat-icon-button
-              matSuffix
-              type="button"
-              (click)="showPassword.set(!showPassword())"
-            >
-              <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
-            </button>
           </mat-form-field>
 
           @if (error()) {
@@ -98,20 +88,16 @@ import { AuthService } from '../../core/auth.service';
               <mat-spinner diameter="18" />
             } @else {
               <ng-container>
-                <mat-icon>login</mat-icon>
-                Se connecter
+                <mat-icon>admin_panel_settings</mat-icon>
+                Créer l'administrateur
               </ng-container>
             }
           </button>
 
-          <a class="setup-callout" routerLink="/setup-admin">
-            <mat-icon>admin_panel_settings</mat-icon>
-            <div>
-              <div class="setup-title">Première installation ?</div>
-              <div class="setup-subtitle">Créer l'administrateur initial</div>
-            </div>
-            <mat-icon class="setup-arrow">chevron_right</mat-icon>
-          </a>
+          <p class="login-link">
+            Déjà configuré ?
+            <a routerLink="/login">Retour à la connexion</a>
+          </p>
         </div>
       </div>
     </div>
@@ -132,7 +118,7 @@ import { AuthService } from '../../core/auth.service';
         border-radius: 16px;
         padding: 40px;
         width: 100%;
-        max-width: 400px;
+        max-width: 420px;
       }
       .brand {
         display: flex;
@@ -207,72 +193,79 @@ import { AuthService } from '../../core/auth.service';
       .submit-btn:disabled {
         opacity: 0.6;
       }
-      .setup-callout {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-top: 10px;
-        padding: 12px 14px;
-        border-radius: 12px;
-        border: 1px solid rgba(129, 140, 248, 0.28);
-        background: rgba(99, 102, 241, 0.08);
-        color: var(--text-primary);
-        text-decoration: none;
-        transition:
-          transform 0.15s,
-          border-color 0.15s,
-          background 0.15s;
-      }
-      .setup-callout:hover {
-        transform: translateY(-1px);
-        border-color: rgba(129, 140, 248, 0.45);
-        background: rgba(99, 102, 241, 0.12);
-      }
-      .setup-callout mat-icon:first-child {
-        color: #a5b4fc;
-      }
-      .setup-title {
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--text-primary);
-      }
-      .setup-subtitle {
-        font-size: 11px;
+      .login-link {
+        text-align: center;
+        font-size: 13px;
         color: var(--text-muted);
-        margin-top: 2px;
+        margin: 8px 0 0;
       }
-      .setup-arrow {
-        margin-left: auto;
-        color: var(--text-faint);
+      .login-link a {
+        color: #818cf8;
+        text-decoration: none;
+        font-weight: 500;
+      }
+      .login-link a:hover {
+        text-decoration: underline;
       }
     `,
   ],
 })
-export class LoginComponent {
+export class SetupAdminComponent implements OnInit {
   username = '';
   password = '';
+  confirmPassword = '';
   loading = signal(false);
+  checking = signal(true);
   error = signal('');
-  showPassword = signal(false);
 
   constructor(
     private auth: AuthService,
     private router: Router,
   ) {}
 
+  ngOnInit() {
+    if (this.auth.isLoggedIn()) {
+      this.router.navigate(['/dashboard']);
+      return;
+    }
+
+    this.auth.getSetupStatus().subscribe({
+      next: (status) => {
+        if (!status.bootstrapRequired) {
+          this.router.navigate(['/login']);
+          return;
+        }
+        this.checking.set(false);
+      },
+      error: () => {
+        this.checking.set(false);
+        this.error.set("Impossible de vérifier l'état de l'installation.");
+      },
+    });
+  }
+
   submit() {
-    if (!this.username || !this.password) {
+    this.error.set('');
+
+    if (!this.username.trim() || !this.password || !this.confirmPassword) {
       this.error.set('Veuillez remplir tous les champs.');
       return;
     }
-    this.loading.set(true);
-    this.error.set('');
+    if (this.password !== this.confirmPassword) {
+      this.error.set('Les mots de passe ne correspondent pas.');
+      return;
+    }
+    if (this.password.length < 6) {
+      this.error.set('Le mot de passe doit contenir au moins 6 caractères.');
+      return;
+    }
 
-    this.auth.login(this.username, this.password).subscribe({
+    this.loading.set(true);
+    this.auth.bootstrapAdmin(this.username.trim(), this.password).subscribe({
       next: () => this.router.navigate(['/dashboard']),
-      error: () => {
-        this.error.set('Identifiants incorrects.');
+      error: (err) => {
         this.loading.set(false);
+        this.error.set(err.error?.message ?? "Impossible de créer l'administrateur initial.");
       },
     });
   }
