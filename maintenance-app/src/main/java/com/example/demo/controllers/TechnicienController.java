@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -55,5 +57,25 @@ public class TechnicienController {
    public ResponseEntity<Void> delete(@PathVariable Long id) {
        service.delete(id);
        return ResponseEntity.noContent().build();
+   }
+
+   @PatchMapping("/me/disponibilite")
+   @Operation(summary = "Met à jour sa propre disponibilité")
+   public ResponseEntity<TechnicienDTO.Response> updateMyDisponibilite(@RequestBody DisponibiliteRequest request) {
+       Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+       String username = auth.getName();
+       return ResponseEntity.ok(service.updateDisponibilite(username, request.disponibilite));
+   }
+
+   @GetMapping("/me")
+   @Operation(summary = "Récupère le technicien associé à l'utilisateur courant")
+   public ResponseEntity<TechnicienDTO.Response> getMyTechnicien() {
+       Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+       String username = auth.getName();
+       return ResponseEntity.ok(service.findByUsername(username));
+   }
+
+   public static class DisponibiliteRequest {
+       public boolean disponibilite;
    }
 }

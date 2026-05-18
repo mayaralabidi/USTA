@@ -17,6 +17,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ApiService } from '../../core/api.service';
+import { AuthService } from '../../core/auth.service';
 import { Panne, Equipement } from '../../models';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 
@@ -254,10 +255,20 @@ export class PanneDialogComponent {
           <th mat-header-cell *matHeaderCellDef></th>
           <td mat-cell *matCellDef="let p">
             <div style="display:flex;gap:2px;justify-content:flex-end">
-              <button mat-icon-button matTooltip="Modifier" (click)="openDialog(p)">
+              <button
+                *ngIf="auth.isAdmin()"
+                mat-icon-button
+                matTooltip="Modifier"
+                (click)="openDialog(p)"
+              >
                 <mat-icon style="font-size:16px;color:#6366f1">edit</mat-icon>
               </button>
-              <button mat-icon-button matTooltip="Supprimer" (click)="delete(p)">
+              <button
+                *ngIf="auth.isAdmin()"
+                mat-icon-button
+                matTooltip="Supprimer"
+                (click)="delete(p)"
+              >
                 <mat-icon style="font-size:16px;color:#ef4444">delete_outline</mat-icon>
               </button>
             </div>
@@ -326,6 +337,7 @@ export class PanneDialogComponent {
 })
 export class PannesComponent implements OnInit {
   private api = inject(ApiService);
+  auth = inject(AuthService);
   private dialog = inject(MatDialog);
   private snack = inject(MatSnackBar);
 

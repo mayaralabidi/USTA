@@ -17,6 +17,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ApiService } from '../../core/api.service';
+import { AuthService } from '../../core/auth.service';
 import { Equipement, EtatEquipement } from '../../models';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 
@@ -124,7 +125,7 @@ export class EquipementDialogComponent {
           {{ filtered().length }} / {{ equipements().length }} équipement(s)
         </p>
       </div>
-      <button mat-flat-button class="btn-primary" (click)="openDialog()">
+      <button *ngIf="auth.isAdmin()" mat-flat-button class="btn-primary" (click)="openDialog()">
         <mat-icon style="font-size:16px;width:16px;height:16px;margin-right:5px">add</mat-icon
         >Ajouter
       </button>
@@ -209,10 +210,20 @@ export class EquipementDialogComponent {
           <th mat-header-cell *matHeaderCellDef></th>
           <td mat-cell *matCellDef="let e">
             <div style="display:flex;gap:2px;justify-content:flex-end">
-              <button mat-icon-button matTooltip="Modifier" (click)="openDialog(e)">
+              <button
+                *ngIf="auth.isAdmin()"
+                mat-icon-button
+                matTooltip="Modifier"
+                (click)="openDialog(e)"
+              >
                 <mat-icon style="font-size:16px;color:#6366f1">edit</mat-icon>
               </button>
-              <button mat-icon-button matTooltip="Supprimer" (click)="delete(e)">
+              <button
+                *ngIf="auth.isAdmin()"
+                mat-icon-button
+                matTooltip="Supprimer"
+                (click)="delete(e)"
+              >
                 <mat-icon style="font-size:16px;color:#ef4444">delete_outline</mat-icon>
               </button>
             </div>
@@ -224,7 +235,13 @@ export class EquipementDialogComponent {
       <div *ngIf="equipements().length === 0" class="empty-state">
         <mat-icon>precision_manufacturing</mat-icon>
         <p>Aucun équipement enregistré</p>
-        <button mat-flat-button class="btn-primary" style="margin-top:8px" (click)="openDialog()">
+        <button
+          *ngIf="auth.isAdmin()"
+          mat-flat-button
+          class="btn-primary"
+          style="margin-top:8px"
+          (click)="openDialog()"
+        >
           Ajouter le premier
         </button>
       </div>
@@ -277,6 +294,7 @@ export class EquipementDialogComponent {
 })
 export class EquipementsComponent implements OnInit {
   private api = inject(ApiService);
+  auth = inject(AuthService);
   private dialog = inject(MatDialog);
   private snack = inject(MatSnackBar);
   equipements = signal<Equipement[]>([]);

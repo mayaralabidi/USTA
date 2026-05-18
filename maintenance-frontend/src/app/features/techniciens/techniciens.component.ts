@@ -19,7 +19,6 @@ import { ApiService } from '../../core/api.service';
 import { Technicien } from '../../models';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 
-
 @Component({
   selector: 'app-technicien-dialog',
   standalone: true,
@@ -378,6 +377,8 @@ export class TechniciensComponent implements OnInit {
   });
   ngOnInit() {
     this.load();
+    // reload when a technicien is changed elsewhere (profile toggle, admin edits)
+    this.api.watchTechniciensChanges().subscribe(() => this.load());
   }
   load() {
     this.loading.set(true);

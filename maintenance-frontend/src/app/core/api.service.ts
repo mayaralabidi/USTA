@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
   Equipement,
@@ -15,6 +15,7 @@ import {
 export class ApiService {
   private http = inject(HttpClient);
   private base = environment.apiUrl;
+  private technicienChanged$ = new Subject<void>();
 
   // ── Equipements ──────────────────────────────
   getEquipements(): Observable<Equipement[]> {
@@ -47,6 +48,9 @@ export class ApiService {
   // ── Techniciens ──────────────────────────────
   getTechniciens(): Observable<Technicien[]> {
     return this.http.get<Technicien[]>(`${this.base}/techniciens`);
+  }
+  getMyTechnicien(): Observable<Technicien> {
+    return this.http.get<Technicien>(`${this.base}/techniciens/me`);
   }
   getTechniciensDisponibles(): Observable<Technicien[]> {
     return this.http.get<Technicien[]>(`${this.base}/techniciens/disponibles`);
@@ -86,5 +90,19 @@ export class ApiService {
   // ── Admin ────────────────────────────────────
   createUser(data: { username: string; password: string; role: 'ADMIN' | 'TECHNICIEN' }) {
     return this.http.post<void>(`${this.base}/admin/users`, data);
+  }
+
+  // ── Generic PATCH method ─────────────────────
+  patch<T>(endpoint: string, data: any): Observable<T> {
+    return this.http.patch<T>(`${this.base}${endpoint}`, data);
+  }
+
+  // Emit when a technicien record changed so UI can refresh
+  notifyTechniciensChanged() {
+    this.technicienChanged$.next();
+  }
+
+  watchTechniciensChanges(): Observable<void> {
+    return this.technicienChanged$.asObservable();
   }
 }

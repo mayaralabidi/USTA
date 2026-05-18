@@ -1,0 +1,61 @@
+<div class="profile-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Mon Profil</h1>
+      <p class="page-subtitle">Gérez vos informations personnelles</p>
+    </div>
+  </div>
+
+  <!-- Profile Info Card -->
+  <div class="card profile-card">
+    <div class="card-header">
+      <span class="card-title">Informations Personnelles</span>
+      <span [class]="'badge ' + getRoleBadgeClass()">{{ getRoleDisplay() }}</span>
+    </div>
+    <div class="card-content">
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">Nom d'utilisateur</div>
+          <div class="info-value">{{ user()?.username }}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Rôle</div>
+          <div class="info-value">{{ getRoleDisplay() }}</div>
+        </div>
+        <div class="info-item" *ngIf="user()?.role === 'TECHNICIEN'">
+          <div class="info-label">Email</div>
+          <div class="info-value">{{ techEmail || 'Non renseigné' }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Availability Card (Technicians only) -->
+  <div class="card availability-card" *ngIf="user()?.role === 'TECHNICIEN'">
+    <div class="card-header">
+      <span class="card-title">Disponibilité</span>
+    </div>
+    <div class="card-content">
+      <div class="availability-toggle-wrapper">
+        <div class="availability-info">
+          <div class="availability-title">Statut actuel</div>
+          <div [class]="'availability-status ' + (disponibilite ? 'available' : 'unavailable')">
+            <span class="status-dot"></span>
+            {{ disponibilite ? 'Disponible' : 'Indisponible' }}
+          </div>
+        </div>
+        <div class="toggle-control">
+          <mat-slide-toggle
+            [checked]="disponibilite"
+            (change)="toggleDisponibilite($event)"
+            [disabled]="isLoading"
+          >
+          </mat-slide-toggle>
+          <mat-progress-spinner *ngIf="isLoading" diameter="24" mode="indeterminate">
+          </mat-progress-spinner>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

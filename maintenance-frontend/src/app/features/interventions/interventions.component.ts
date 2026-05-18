@@ -19,6 +19,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { forkJoin } from 'rxjs';
 import { ApiService } from '../../core/api.service';
+import { AuthService } from '../../core/auth.service';
 import { Intervention, Equipement, Technicien, Panne, StatutIntervention } from '../../models';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 
@@ -179,7 +180,7 @@ export class InterventionDialogComponent {
           {{ filtered().length }} affichée(s) · {{ interventions().length }} au total
         </p>
       </div>
-      <button mat-flat-button class="btn-primary" (click)="openDialog()">
+      <button *ngIf="auth.isAdmin()" mat-flat-button class="btn-primary" (click)="openDialog()">
         <mat-icon style="font-size:16px;width:16px;height:16px;margin-right:5px">add</mat-icon>
         Planifier
       </button>
@@ -374,11 +375,17 @@ export class InterventionDialogComponent {
                 matTooltip="Modifier"
                 (click)="openDialog(i)"
                 [disabled]="i.statut === 'TERMINEE' || i.statut === 'ANNULEE'"
+                *ngIf="auth.isAdmin()"
               >
                 <mat-icon style="font-size:16px;color:#6366f1">edit</mat-icon>
               </button>
 
-              <button mat-icon-button matTooltip="Supprimer" (click)="delete(i)">
+              <button
+                *ngIf="auth.isAdmin()"
+                mat-icon-button
+                matTooltip="Supprimer"
+                (click)="delete(i)"
+              >
                 <mat-icon style="font-size:16px;color:#ef4444">delete_outline</mat-icon>
               </button>
             </div>
@@ -447,6 +454,7 @@ export class InterventionDialogComponent {
 })
 export class InterventionsComponent implements OnInit {
   private api = inject(ApiService);
+  auth = inject(AuthService);
   private dialog = inject(MatDialog);
   private snack = inject(MatSnackBar);
 

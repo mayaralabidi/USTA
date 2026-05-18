@@ -2,8 +2,10 @@ package com.example.demo.services;
 
 import com.example.demo.dto.AuthDTO;
 import com.example.demo.entities.Utilisateur;
+import com.example.demo.entities.Technicien;
 import com.example.demo.exceptions.BusinessRuleException;
 import com.example.demo.repositories.UtilisateurRepository;
+import com.example.demo.repositories.TechnicienRepository;
 import com.example.demo.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +20,7 @@ import java.util.Map;
 public class AuthService {
 
     private final UtilisateurRepository utilisateurRepo;
+    private final TechnicienRepository technicienRepo;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authManager;
@@ -70,7 +73,17 @@ public class AuthService {
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .role(role)
                 .build();
-        return utilisateurRepo.save(user);
+        Utilisateur savedUser = utilisateurRepo.save(user);
+        
+        if (role == Utilisateur.Role.TECHNICIEN) {
+            Technicien tech = Technicien.builder()
+                    .nom(dto.getUsername())
+                    .disponibilite(true)
+                    .build();
+            technicienRepo.save(tech);
+        }
+        
+        return savedUser;
     }
 
     private AuthDTO.AuthResponse buildResponse(Utilisateur user) {

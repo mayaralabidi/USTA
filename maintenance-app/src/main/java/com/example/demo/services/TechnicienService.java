@@ -29,6 +29,10 @@ public class TechnicienService {
     public TechnicienDTO.Response findById(Long id) {
         return toResponse(getOrThrow(id));
     }
+
+    public TechnicienDTO.Response findByUsername(String username) {
+        return toResponse(getByUsernameOrThrow(username));
+    }
  
     @Transactional
     public TechnicienDTO.Response create(TechnicienDTO.Request dto) {
@@ -60,6 +64,18 @@ public class TechnicienService {
     public Technicien getOrThrow(Long id) {
         return repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Technicien introuvable : id=" + id));
+    }
+
+    public Technicien getByUsernameOrThrow(String username) {
+        return repo.findByNom(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Technicien introuvable pour l'utilisateur : " + username));
+    }
+
+    @Transactional
+    public TechnicienDTO.Response updateDisponibilite(String username, boolean disponibilite) {
+        Technicien t = getByUsernameOrThrow(username);
+        t.setDisponibilite(disponibilite);
+        return toResponse(repo.save(t));
     }
  
     private TechnicienDTO.Response toResponse(Technicien t) {

@@ -433,6 +433,7 @@ export class AppComponent {
       icon: 'admin_panel_settings',
       adminOnly: true,
     },
+    { path: 'profile', label: 'Mon Profil', icon: 'account_circle' },
   ];
 
   constructor(public auth: AuthService) {}

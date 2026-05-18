@@ -41,9 +41,12 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/**").hasAnyRole("ADMIN", "TECHNICIEN")
+                .requestMatchers(HttpMethod.POST, "/api/pannes").hasAnyRole("ADMIN", "TECHNICIEN")
                 .requestMatchers(HttpMethod.PUT, "/api/interventions/*/statut").hasAnyRole("ADMIN", "TECHNICIEN")
+                .requestMatchers(HttpMethod.PATCH, "/api/techniciens/me/disponibilite").hasAnyRole("ADMIN", "TECHNICIEN")
                 .requestMatchers(HttpMethod.POST, "/api/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PATCH, "/api/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
@@ -57,7 +60,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:4200", "http://frontend:80"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 
