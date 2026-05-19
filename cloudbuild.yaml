@@ -35,7 +35,7 @@ steps:
       - "--add-cloudsql-instances"
       - "$PROJECT_ID:europe-west1:maintenanceusta-db"
       - "--set-env-vars"
-      - "DB_HOST=localhost,DB_PORT=3306,DB_NAME=maintenance_db,DB_USER=maintenance_user,DB_PASSWORD=$$DB_PASSWORD,CORS_ORIGINS=$$FRONTEND_URL"
+      - "DB_HOST=localhost,DB_PORT=3306,DB_NAME=maintenance_db,DB_USER=maintenance_user,CORS_ORIGINS=$$FRONTEND_URL"
       - "--update-secrets"
       - "DB_PASSWORD=db-password:latest,FRONTEND_URL=frontend-url:latest"
     id: "deploy-backend"
