@@ -45,7 +45,7 @@ import { AuthService } from '../../core/auth.service';
             </svg>
           </div>
           <div>
-            <div class="brand-name">MaintenancePro</div>
+            <div class="brand-name">MaintenanceUSTA</div>
             <div class="brand-sub">Gestion industrielle</div>
           </div>
         </div>

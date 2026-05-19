@@ -50,7 +50,7 @@ interface NavItem {
               </svg>
             </div>
             <div class="brand-text">
-              <span class="brand-name">MaintenancePro</span>
+              <span class="brand-name">MaintenanceUSTA</span>
               <span class="brand-sub">Gestion industrielle</span>
             </div>
             <button class="toggle-btn" (click)="collapsed.set(true)">

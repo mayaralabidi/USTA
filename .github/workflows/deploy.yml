@@ -1,0 +1,49 @@
+name: Deploy to GCP
+
+on:
+  push:
+    branches:
+      - main # triggers on every push to main
+
+jobs:
+  deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout code
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. Authenticate to Google Cloud
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      # 3. Set up gcloud CLI
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      # 4. Submit build to Cloud Build
+      # This triggers cloudbuild.yaml in the repo root
+      - name: Submit to Cloud Build
+        run: |
+          gcloud builds submit \
+            --config=cloudbuild.yaml \
+            --project=${{ secrets.GCP_PROJECT_ID }}
+
+      # 5. Print the deployed URLs
+      - name: Get deployed URLs
+        run: |
+          echo "Backend URL:"
+          gcloud run services describe maintenance-backend \
+            --region=europe-west1 \
+            --format='value(status.url)'
+
+          echo "Frontend URL:"
+          gcloud run services describe maintenance-frontend \
+            --region=europe-west1 \
+            --format='value(status.url)'

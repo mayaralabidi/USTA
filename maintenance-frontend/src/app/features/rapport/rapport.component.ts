@@ -68,7 +68,7 @@ import { Intervention, Panne, DashboardStats } from '../../models';
           </svg>
         </div>
         <div>
-          <div class="report-title">MaintenancePro — Rapport mensuel</div>
+          <div class="report-title">MaintenanceUSTA — Rapport mensuel</div>
           <div class="report-period">{{ periodLabel }} · Généré le {{ today }}</div>
         </div>
       </div>
@@ -191,7 +191,9 @@ import { Intervention, Panne, DashboardStats } from '../../models';
       </div>
 
       <!-- Footer -->
-      <div class="report-footer">MaintenancePro · Rapport généré automatiquement · {{ today }}</div>
+      <div class="report-footer">
+        MaintenanceUSTA · Rapport généré automatiquement · {{ today }}
+      </div>
     </div>
   `,
   styles: [
