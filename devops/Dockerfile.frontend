@@ -1,7 +1,8 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
+RUN npm install -g npm@10.9.2
 COPY maintenance-frontend/package*.json ./
-RUN npm ci --silent
+RUN npm ci
 COPY maintenance-frontend/ .
 RUN npm run build -- --configuration production
 
