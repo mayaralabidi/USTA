@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-register',
@@ -260,7 +261,7 @@ export class RegisterComponent {
   showPassword = signal(false);
   showConfirm = signal(false);
 
-  private readonly API = 'http://localhost:8080/api/auth';
+  private readonly API = `${environment.apiUrl}/auth`;
 
   constructor(
     private http: HttpClient,
