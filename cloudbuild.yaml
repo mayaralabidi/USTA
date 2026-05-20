@@ -31,6 +31,7 @@ steps:
       - "managed"
       - "--region"
       - "europe-west1"
+      - "--allow-unauthenticated"
       - "--add-cloudsql-instances"
       - "$PROJECT_ID:europe-west1:maintenanceusta-db"
       - "--set-env-vars"
@@ -50,7 +51,7 @@ steps:
       - "devops/Dockerfile.frontend"
       - "."
     id: "build-frontend"
-    waitFor: ["deploy-backend"] # wait so backend URL exists
+    waitFor: ["deploy-backend"]
 
   # ── Step 5: Push frontend image ──────────────────────────────
   - name: "gcr.io/cloud-builders/docker"
@@ -73,15 +74,14 @@ steps:
       - "managed"
       - "--region"
       - "europe-west1"
+      - "--allow-unauthenticated"
     id: "deploy-frontend"
     waitFor: ["push-frontend"]
 
-# Store built images in Container Registry
 images:
   - "europe-west1-docker.pkg.dev/$PROJECT_ID/maintenance-repo/backend"
   - "europe-west1-docker.pkg.dev/$PROJECT_ID/maintenance-repo/frontend"
 
-# Build timeout — 20 minutes should be enough
 timeout: "1200s"
 
 options:
